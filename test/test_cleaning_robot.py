@@ -75,3 +75,22 @@ class TestCleaningRobot(TestCase):
         mock_ibs.return_value = 11
         robot.manage_cleaning_system()
         self.assertFalse(robot.recharge_led_on)
+
+    def test_execute_command_forward(self):
+        robot = CleaningRobot()
+        robot.initialize_robot()
+        result = robot.execute_command('f')
+        self.assertEqual(result, '(0,1,N)')
+
+    def test_execute_command_left(self):
+        robot = CleaningRobot()
+        robot.initialize_robot()
+        result = robot.execute_command('l')
+        self.assertEqual(result, '(0,0,W)')
+
+
+    def test_execute_command_right(self):
+        robot = CleaningRobot()
+        robot.initialize_robot()
+        result = robot.execute_command('r')
+        self.assertEqual(result, '(0,0,E)')
