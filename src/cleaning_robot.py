@@ -74,6 +74,19 @@ class CleaningRobot:
 
     def execute_command(self, command: str) -> str:
         if command == self.FORWARD:
+            # if there is an obstacle
+            if self.obstacle_found():
+                obstacle = None
+                if self.heading == self.N:
+                    obstacle = '(' + str(self.pos_x) + ',' + str(self.pos_y + 1) + ')'
+                elif self.heading == self.E:
+                    obstacle = '(' + str(self.pos_x + 1) + ',' + str(self.pos_y) + ')'
+                elif self.heading == self.W:
+                    obstacle = '(' + str(self.pos_x - 1) + ',' + str(self.pos_y + 1) + ')'
+                elif self.heading == self.S:
+                    obstacle = '(' + str(self.pos_x ) + ',' + str(self.pos_y - 1) + ')'
+                return self.robot_status() + obstacle
+
             # Go forward
             self.activate_wheel_motor()
             if self.heading == self.N:
