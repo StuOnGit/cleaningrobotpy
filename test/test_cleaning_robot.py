@@ -49,8 +49,15 @@ class TestCleaningRobot(TestCase):
         self.assertTrue(result)
 
     @patch.object(IBS, "get_charge_left")
-    def test_manage_cleaning_system_cleaning_system_on_recharging_off(self, mock_ibs: Mock):
+    def test_manage_cleaning_system_cleaning_system_on(self, mock_ibs: Mock):
         robot = CleaningRobot()
         mock_ibs.return_value = 11
         robot.manage_cleaning_system()
         self.assertTrue(robot.cleaning_system_on)
+
+    @patch.object(IBS, "get_charge_left")
+    def test_manage_cleaning_system_cleaning_system_off(self, mock_ibs: Mock):
+        robot = CleaningRobot()
+        mock_ibs.return_value = 10
+        robot.manage_cleaning_system()
+        self.assertFalse(robot.cleaning_system_on)
