@@ -30,10 +30,20 @@ class TestCleaningRobot(TestCase):
         robot.initialize_robot()
         self.assertEqual(robot.heading, 'N')
 
-    def test_robot_status(self):
+    def test_robot_status_initial_position(self):
         robot = CleaningRobot()
         robot.initialize_robot()
         status = robot.robot_status()
         pattern = r'^\((0|1|2|),(0|1|2|3|4),(N|S|O|W)\)$'
         result =  re.match(pattern, status)
+        self.assertTrue(result)
+
+    def test_robot_status_position(self):
+        robot = CleaningRobot()
+        robot.heading = robot.S
+        robot.pos_x = 2
+        robot.pos_y = 2
+        status = robot.robot_status()
+        pattern = r'^\((0|1|2|),(0|1|2|3|4),(N|S|O|W)\)$'
+        result = re.match(pattern, status)
         self.assertTrue(result)
