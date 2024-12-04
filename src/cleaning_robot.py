@@ -73,50 +73,57 @@ class CleaningRobot:
         return '(' + str(self.pos_x) + ',' + str(self.pos_y) + ',' + str(self.heading) + ')'
 
     def execute_command(self, command: str) -> str:
-        if command == self.FORWARD:
-            # if there is an obstacle
-            if self.obstacle_found():
-                obstacle = None
+        self.manage_cleaning_system()
+        no_action = ''
+        if self.cleaning_system_on:
+            if command == self.FORWARD:
+
+                # if there is an obstacle
+                if self.obstacle_found():
+                    obstacle = None
+                    if self.heading == self.N:
+                        obstacle = '(' + str(self.pos_x) + ',' + str(self.pos_y + 1) + ')'
+                    elif self.heading == self.E:
+                        obstacle = '(' + str(self.pos_x + 1) + ',' + str(self.pos_y) + ')'
+                    elif self.heading == self.W:
+                        obstacle = '(' + str(self.pos_x - 1) + ',' + str(self.pos_y + 1) + ')'
+                    elif self.heading == self.S:
+                        obstacle = '(' + str(self.pos_x ) + ',' + str(self.pos_y - 1) + ')'
+                    return self.robot_status() + obstacle
+
+                # Go forward
+                self.activate_wheel_motor()
                 if self.heading == self.N:
-                    obstacle = '(' + str(self.pos_x) + ',' + str(self.pos_y + 1) + ')'
-                elif self.heading == self.E:
-                    obstacle = '(' + str(self.pos_x + 1) + ',' + str(self.pos_y) + ')'
-                elif self.heading == self.W:
-                    obstacle = '(' + str(self.pos_x - 1) + ',' + str(self.pos_y + 1) + ')'
+                    self.pos_y += 1
+                else:
+                    self.pos_x += 1
+
+            # See If left or right rotation
+            elif command == self.LEFT:
+                self.activate_rotation_motor(self.LEFT)
+                if self.heading == self.N:
+                    self.heading = self.W
                 elif self.heading == self.S:
-                    obstacle = '(' + str(self.pos_x ) + ',' + str(self.pos_y - 1) + ')'
-                return self.robot_status() + obstacle
+                    self.heading = self.E
+                elif self.heading == self.E:
+                    self.heading = self.N
+                elif self.heading == self.W:
+                    self.heading = self.S
+            elif command == self.RIGHT:
+                self.activate_rotation_motor(self.RIGHT)
+                if self.heading == self.N:
+                    self.heading = self.E
+                elif self.heading == self.S:
+                    self.heading = self.W
+                elif self.heading == self.E:
+                    self.heading = self.S
+                elif self.heading == self.W:
+                    self.heading = self.N
 
-            # Go forward
-            self.activate_wheel_motor()
-            if self.heading == self.N:
-                self.pos_y += 1
-            else:
-                self.pos_x += 1
+        elif self.recharge_led_on:
+            no_action = '!'
 
-        # See If left or right rotation
-        elif command == self.LEFT:
-            self.activate_rotation_motor(self.LEFT)
-            if self.heading == self.N:
-                self.heading = self.W
-            elif self.heading == self.S:
-                self.heading = self.E
-            elif self.heading == self.E:
-                self.heading = self.N
-            elif self.heading == self.W:
-                self.heading = self.S
-        elif command == self.RIGHT:
-            self.activate_rotation_motor(self.RIGHT)
-            if self.heading == self.N:
-                self.heading = self.E
-            elif self.heading == self.S:
-                self.heading = self.W
-            elif self.heading == self.E:
-                self.heading = self.S
-            elif self.heading == self.W:
-                self.heading = self.N
-
-        return self.robot_status()
+        return no_action + self.robot_status()
 
     def obstacle_found(self) -> bool:
         return GPIO.input(self.INFRARED_PIN) == GPIO.HIGH
