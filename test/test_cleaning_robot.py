@@ -94,3 +94,19 @@ class TestCleaningRobot(TestCase):
         robot.initialize_robot()
         result = robot.execute_command('r')
         self.assertEqual(result, '(0,0,E)')
+
+    @patch.object(GPIO, "input")
+    def test_obstacle_found(self, mock_GPIO: Mock):
+        robot = CleaningRobot()
+        robot.initialize_robot()
+        mock_GPIO.return_value = True
+        result = robot.obstacle_found()
+        self.assertTrue(result)
+
+    @patch.object(GPIO, "input")
+    def test_obstacle_not_found(self, mock_GPIO: Mock):
+        robot = CleaningRobot()
+        robot.initialize_robot()
+        mock_GPIO.return_value = False
+        result = robot.obstacle_found()
+        self.assertFalse(result)
