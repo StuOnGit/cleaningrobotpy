@@ -28,7 +28,7 @@ class TestCleaningRobot(TestCase):
     def test_initialize_robot_heading(self):
         robot = CleaningRobot()
         robot.initialize_robot()
-        self.assertEqual(robot.heading, 'N')
+        self.assertEqual(robot.heading, robot.N)
 
     def test_robot_status_initial_position(self):
         robot = CleaningRobot()
@@ -79,20 +79,20 @@ class TestCleaningRobot(TestCase):
     def test_execute_command_forward(self):
         robot = CleaningRobot()
         robot.initialize_robot()
-        result = robot.execute_command('f')
+        result = robot.execute_command(robot.FORWARD)
         self.assertEqual(result, '(0,1,N)')
 
     def test_execute_command_left(self):
         robot = CleaningRobot()
         robot.initialize_robot()
-        result = robot.execute_command('l')
+        result = robot.execute_command(robot.LEFT)
         self.assertEqual(result, '(0,0,W)')
 
 
     def test_execute_command_right(self):
         robot = CleaningRobot()
         robot.initialize_robot()
-        result = robot.execute_command('r')
+        result = robot.execute_command(robot.RIGHT)
         self.assertEqual(result, '(0,0,E)')
 
     @patch.object(GPIO, "input")
@@ -117,7 +117,14 @@ class TestCleaningRobot(TestCase):
         robot = CleaningRobot()
         robot.initialize_robot()
         mock_gpio.return_value = True
-        result = robot.execute_command('f')
+        result = robot.execute_command(robot.FORWARD)
         self.assertEqual(result, '(0,0,N)(0,1)')
 
 
+    @patch.object(IBS, "get_charge_left")
+    def test_command_but_not_charged(self, mock_ibs: Mock):
+        robot = CleaningRobot()
+        robot.initialize_robot()
+        mock_ibs.return_value = 10
+        result = robot.execute_command(robot.FORWARD)
+        self.assertEqual(result, '!(0,0,N)')
