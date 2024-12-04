@@ -13,4 +13,11 @@ class TestCleaningRobot(TestCase):
         # This is an example of test where I want to mock the GPIO.input() function
         pass
 
+    def test_initialize_robot_x(self):
+        robot = CleaningRobot()
+        robot.initialize_robot()
+        self.assertEqual(robot.pos_x, 0)
+
+
+
 
