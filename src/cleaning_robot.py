@@ -154,14 +154,12 @@ class CleaningRobot:
             while self.heading != self.W:
                 self.execute_command(self.LEFT)
             self.execute_command(self.FORWARD)
-            print(self.robot_status())
             self.activate_wheel_motor()
 
         while self.pos_y != 0:
             while self.heading != self.S:
                 self.execute_command(self.RIGHT)
             self.execute_command(self.FORWARD)
-            print(self.robot_status())
             self.activate_wheel_motor()
 
         while self.heading != self.N:
