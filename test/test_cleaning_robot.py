@@ -128,3 +128,14 @@ class TestCleaningRobot(TestCase):
         mock_ibs.return_value = 10
         result = robot.execute_command(robot.FORWARD)
         self.assertEqual(result, '!(0,0,N)')
+
+    @patch.object(IBS, "get_charge_left")
+    def test_return_to_initial_position(self, mock_ibs: Mock):
+        robot = CleaningRobot()
+        robot.pos_y = 2
+        robot.pos_x = 2
+        robot.heading = robot.N
+        mock_ibs.return_value = 20
+        robot.return_to_initial_position()
+        result = robot.robot_status()
+        self.assertEqual(result, '(0,0,N)')

@@ -95,8 +95,12 @@ class CleaningRobot:
                 self.activate_wheel_motor()
                 if self.heading == self.N:
                     self.pos_y += 1
-                else:
+                elif self.heading == self.E:
                     self.pos_x += 1
+                elif self.heading == self.W:
+                    self.pos_x -= 1
+                elif self.heading == self.S:
+                    self.pos_y -= 1
 
             # See If left or right rotation
             elif command == self.LEFT:
@@ -129,7 +133,6 @@ class CleaningRobot:
         return GPIO.input(self.INFRARED_PIN) == GPIO.HIGH
 
 
-
     def manage_cleaning_system(self) -> None:
         if self.ibs.get_charge_left() <= 10:
             GPIO.output(self.RECHARGE_LED_PIN, GPIO.HIGH)
@@ -141,6 +144,29 @@ class CleaningRobot:
             GPIO.output(self.CLEANING_SYSTEM_PIN, GPIO.LOW)
             self.cleaning_system_on = True
             self.recharge_led_on = False
+
+    def return_to_initial_position(self) -> None:
+
+        if (self.pos_x < 0 or self.pos_y < 0):
+            raise CleaningRobotError("Error about position: " + self.pos_x + "," + self.pos_y + " while returning to initial position")
+
+        while self.pos_x != 0:
+            while self.heading != self.W:
+                self.execute_command(self.LEFT)
+            self.execute_command(self.FORWARD)
+            print(self.robot_status())
+            self.activate_wheel_motor()
+
+        while self.pos_y != 0:
+            while self.heading != self.S:
+                self.execute_command(self.RIGHT)
+            self.execute_command(self.FORWARD)
+            print(self.robot_status())
+            self.activate_wheel_motor()
+
+        while self.heading != self.N:
+            self.execute_command(self.RIGHT)
+
 
 
     def activate_wheel_motor(self) -> None:
@@ -172,6 +198,7 @@ class CleaningRobot:
         if direction == self.LEFT:
             GPIO.output(self.BIN1, GPIO.HIGH)
             GPIO.output(self.BIN2, GPIO.LOW)
+
         elif direction == self.RIGHT:
             GPIO.output(self.BIN1, GPIO.LOW)
             GPIO.output(self.BIN2, GPIO.HIGH)
