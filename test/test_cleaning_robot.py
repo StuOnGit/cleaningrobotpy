@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch, call
 
 from mock import GPIO
 from mock.ibs import IBS
-from src.cleaning_robot import CleaningRobot
+from src.cleaning_robot import CleaningRobot, CleaningRobotError
 import re
 
 
@@ -139,3 +139,13 @@ class TestCleaningRobot(TestCase):
         robot.return_to_initial_position()
         result = robot.robot_status()
         self.assertEqual(result, '(0,0,N)')
+
+    @patch.object(IBS, "get_charge_left")
+    def test_return_to_initial_position_raise_error(self, mock_ibs: Mock):
+        robot = CleaningRobot()
+        robot.pos_y = -1
+        robot.pos_x = -1
+        robot.heading = robot.N
+        mock_ibs.return_value = 20
+        with self.assertRaises(CleaningRobotError):
+            robot.return_to_initial_position()

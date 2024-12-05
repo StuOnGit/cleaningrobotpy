@@ -148,7 +148,7 @@ class CleaningRobot:
     def return_to_initial_position(self) -> None:
 
         if (self.pos_x < 0 or self.pos_y < 0):
-            raise CleaningRobotError("Error about position: " + self.pos_x + "," + self.pos_y + " while returning to initial position")
+            raise CleaningRobotError("Error about position: " + str(self.pos_x) + "," + str(self.pos_y) + " while returning to initial position")
 
         while self.pos_x != 0:
             while self.heading != self.W:
