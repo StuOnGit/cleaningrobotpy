@@ -76,24 +76,31 @@ class TestCleaningRobot(TestCase):
         robot.manage_cleaning_system()
         self.assertFalse(robot.recharge_led_on)
 
-    def test_execute_command_forward(self):
+    @patch.object(IBS, "get_charge_left")
+    def test_execute_command_forward(self, mock_ibs: Mock):
         robot = CleaningRobot()
         robot.initialize_robot()
+        mock_ibs.return_value = 20
         result = robot.execute_command(robot.FORWARD)
         self.assertEqual(result, '(0,1,N)')
 
-    def test_execute_command_left(self):
+    @patch.object(IBS, "get_charge_left")
+    def test_execute_command_left(self, mock_ibs: Mock):
         robot = CleaningRobot()
         robot.initialize_robot()
+        mock_ibs.return_value = 20
         result = robot.execute_command(robot.LEFT)
         self.assertEqual(result, '(0,0,W)')
 
 
-    def test_execute_command_right(self):
+    @patch.object(IBS, "get_charge_left")
+    def test_execute_command_right(self, mock_ibs: Mock):
         robot = CleaningRobot()
         robot.initialize_robot()
+        mock_ibs.return_value = 20
         result = robot.execute_command(robot.RIGHT)
         self.assertEqual(result, '(0,0,E)')
+
 
     @patch.object(GPIO, "input")
     def test_obstacle_found(self, mock_gpio: Mock):
@@ -111,12 +118,13 @@ class TestCleaningRobot(TestCase):
         result = robot.obstacle_found()
         self.assertFalse(result)
 
-
+    @patch.object(IBS, "get_charge_left")
     @patch.object(GPIO, "input")
-    def test_command_and_obstacle_found(self, mock_gpio: Mock):
+    def test_command_and_obstacle_found(self, mock_gpio: Mock, mock_ibs: Mock):
         robot = CleaningRobot()
         robot.initialize_robot()
         mock_gpio.return_value = True
+        mock_ibs.return_value = 20
         result = robot.execute_command(robot.FORWARD)
         self.assertEqual(result, '(0,0,N)(0,1)')
 
